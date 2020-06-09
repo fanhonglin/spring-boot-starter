@@ -193,6 +193,8 @@ public class MybatisAutoConfiguration implements InitializingBean {
     factory.setConfiguration(configuration);
   }
 
+  // 这里只是代理sqlSession
+  // SqlSessionTemplate 代理 SqlSessionInterceptor， SqlSessionInterceptor代理sqlSession
   @Bean
   @ConditionalOnMissingBean
   public SqlSessionTemplate sqlSessionTemplate(SqlSessionFactory sqlSessionFactory) {
@@ -252,7 +254,15 @@ public class MybatisAutoConfiguration implements InitializingBean {
    * mappers based on the same component-scanning path as Spring Boot itself.
    */
   @org.springframework.context.annotation.Configuration
+
+  // 扫描Mapper文件，通过MapperScannerConfigurer去扫描
+  // 注册Mapper文件到BeanDefinition当中
   @Import(AutoConfiguredMapperScannerRegistrar.class)
+
+  // MapperFactoryBean afterPropertiesSet()->checkDaoConfig，获取Configuration并当中添加mapper
+  // Configuration mapperRegistry.addMapper
+
+  // MapperScannerConfigurer.postProcessBeanDefinitionRegistry
   @ConditionalOnMissingBean({ MapperFactoryBean.class, MapperScannerConfigurer.class })
   public static class MapperScannerRegistrarNotFoundConfiguration implements InitializingBean {
 
